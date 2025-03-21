@@ -85,7 +85,6 @@ export class AuthController {
     return this.authService.login({ 
     
       email: 
-
       body.email, pass: body.password });
   }
 }

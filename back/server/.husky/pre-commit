@@ -1,4 +1,4 @@
 # .husky/pre-commit
 # Garante que o Prettier será executado apenas nos arquivos modificados
-prettier --write $(git diff --cached --name-only --diff-filter=ACMR | sed 's| |\\ |g') --ignore-unknown
+npx prettier --write $(git diff --cached --name-only --diff-filter=ACMR | sed 's| |\\ |g') --ignore-unknown
 git update-index --again
