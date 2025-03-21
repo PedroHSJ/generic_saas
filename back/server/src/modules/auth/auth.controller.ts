@@ -59,13 +59,8 @@ export class AuthController {
   })
   @Get("google/redirect")
   @UseGuards(AuthGuard("google"))
-  async googleAuthRedirect(
-    @Request() req: Request,
-    @Res() res: Response,
-  ) {
-    const { access_token } = await this.authService.loginGoogle(
-      req.user.id,
-    );
+  async googleAuthRedirect(@Request() req: Request, @Res() res: Response) {
+    const { access_token } = await this.authService.loginGoogle(req.user.id);
 
     res.redirect(
       `${process.env.CLIENT_LOGIN_ROUTE}/login?token=${access_token}`.trim(),
@@ -87,8 +82,14 @@ export class AuthController {
   async auth(
     @Body() body: LoginDto,
   ): Promise<{ access_token: string; message: string }> {
-    return this.authService.login({email: body.email,
-      pass: body.password,
-              });
+    return this.authService.login({ 
+      
+      
+      email: 
+
+
+      
+      
+      body.email, pass: body.password });
   }
 }
