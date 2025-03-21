@@ -79,4 +79,17 @@ export class NotificationService {
 
     await this.sendEmail(to, subject, htmlContent);
   }
+
+  async sendForgotPasswordEmail(
+    to: string,
+    token: string,
+  ): Promise<void> {
+    const subject = "Reset Password";
+    const htmlContent = `
+      <h1>Reset Password</h1>
+      <p>Click <a href="${process.env.SERVER_URL}/api/user/reset-password/${token}">here</a> to reset your password</p>
+    `;
+
+    await this.sendEmail(to, subject, htmlContent);
+  }
 }

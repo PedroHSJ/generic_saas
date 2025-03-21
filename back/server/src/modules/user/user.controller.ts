@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Param } from "@nestjs/common";
+import { Controller, Get, Post, Body, Param, Res } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import {
@@ -7,11 +7,14 @@ import {
   ApiResponse,
   ApiTags,
   ApiBody,
+  ApiParam,
 } from "@nestjs/swagger";
 import { Paginate, Paginated, PaginateQuery } from "nestjs-paginate";
 import { IObjectResponse } from "src/shared/interfaces/objectResponse.interface";
 import { UserDto } from "./dto/user.dto";
 import { Public } from "src/shared/helpers/decorators/public.decorator";
+import { Response } from "express";
+import { UpdatePasswordDto } from "./dto/update-password.dto";
 
 @ApiHeader({
   name: "Accept-Language",
@@ -65,7 +68,7 @@ export class UserController {
     @Param("token") token: string,
   ): Promise<{ url: string; message: string }> {
     const { message } = await this.userService.activateUser(token);
-    return { url: process.env.CLIENT_LOGIN_ROUTE, message };
+    return { url: `${process.env.CLIENT_URL}`, message };
   }
 
   @Public()
@@ -81,6 +84,54 @@ export class UserController {
   ): Promise<void> {
     await this.userService.resendAccountConfirmationEmail(email);
   }
+
+  @Public()
+  @Get("/forgot-password/:email")
+  @ApiOperation({ summary: "Forgot password" })
+  @ApiResponse({
+    status: 200,
+    description: "Email sent successfully",
+  })
+  @ApiResponse({ status: 400, description: "Bad request" })
+  async forgotPassword(
+    @Param("email") email: string,
+  ): Promise<IObjectResponse<null>> {
+    return await this.userService.sendForgotPasswordEmail(email);
+  }
+
+  @Public()
+  @Get("/reset-password/:token")
+  @ApiOperation({ summary: "Callback reset password", description: "Callback to redirect to the reset password page" })
+  @ApiResponse({
+    status: 200,
+    description: "Password reset successfully",
+  })
+  @ApiResponse({ status: 400, description: "Bad request" })
+  async redirectResetPassword(
+    @Param("token") token: string,
+    @Res() res: Response,
+  ): Promise<void> {
+    console.log(token);
+    res.redirect(`${process.env.CLIENT_URL}/reset-password/${token}`);
+  }
+
+  @Public()
+  @Post("/reset-password/:token")
+  @ApiOperation({ summary: "Reset password" })
+  @ApiResponse({
+    status: 200,
+    description: "Password reset successfully",
+  })
+  @ApiParam({ name: "token", description: "Token to reset password (base64)", })
+  @ApiResponse({ status: 400, description: "Bad request" })
+  @ApiBody({ type: UpdatePasswordDto })
+  async resetPassword(
+    @Param("token") token: string,
+    @Body() body: UpdatePasswordDto
+  ): Promise<IObjectResponse<null>> {
+    return await this.userService.resetPassword(token, body.newPassword);
+  }
+
 
   // @Get(":id")
   // @ApiOperation({ summary: "Get a user by ID" })

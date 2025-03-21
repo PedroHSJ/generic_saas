@@ -27,8 +27,8 @@ export class AuthService {
   }: {
     email: string;
     pass: string;
-  }): Promise<any> {
-    const user = await this.userService.findByEmail(email);
+  }): Promise<{ access_token: string; message: string }> {
+    const user = await this.userService.findByEmailWithPassword(email);
     if (!user)
       throw new UnauthorizedException(
         this.i18n.t("events.commons.notFound"),
@@ -43,11 +43,15 @@ export class AuthService {
       throw new UnauthorizedException(
         this.i18n.t("events.commons.googleLogin"),
       );
-
     const passwordIsValid = await this.userService.comparePassword(
       pass,
       user.password,
     );
+    if(!passwordIsValid) 
+      throw new UnauthorizedException(
+        this.i18n.t("events.commons.invalidCredentials"),
+      );
+
     if (user && passwordIsValid) return this.tokenGenerate(user);
   }
 

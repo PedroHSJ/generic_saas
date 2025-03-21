@@ -59,7 +59,6 @@ export class AuthController {
   })
   @Get("google/redirect")
   @UseGuards(AuthGuard("google"))
-  //@ApiExcludeEndpoint()
   async googleAuthRedirect(
     @Request() req: Request,
     @Res() res: Response,
@@ -69,23 +68,26 @@ export class AuthController {
     );
 
     res.redirect(
-      `http://localhost:5173/login?token=${access_token}`.trim(),
+      `${process.env.CLIENT_LOGIN_ROUTE}/login?token=${access_token}`.trim(),
     );
   }
 
   @Public()
-  @ApiHeader({
-    name: "Accept-Language",
-    description: "Language",
-    example: "en-US",
+  @ApiOperation({
+    summary: "Login",
+    description: "Authenticate user",
   })
-  //@ApiExcludeEndpoint()
+  @ApiOkResponse({
+    description: "User authenticated",
+  })
+  @ApiBadRequestResponse({
+    description: "Bad request",
+  })
   @Post()
-  async auth(@Body() body: LoginDto) {
-    // return this.authService.auth({
-    //   email: body.email,
-    //   pass: body.password,
-    // });
-    return;
+  async auth(@Body() body: LoginDto): Promise<{ access_token: string; message: string }> {
+    return this.authService.login({
+      email: body.email,
+      pass: body.password,
+    });
   }
 }

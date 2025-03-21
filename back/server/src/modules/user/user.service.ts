@@ -28,6 +28,14 @@ export class UserService {
     private readonly userRepository: Repository<UserEntity>,
   ) {}
 
+  async b64EncodeUnicode(str: string): Promise<string> {
+    return Buffer.from(str).toString("base64");
+  }
+
+  async b64DecodeUnicode(str: string): Promise<string> {
+    return Buffer.from(str, "base64").toString("utf-8");
+  }
+
   async hashPassword(password: string): Promise<string> {
     const salt = await bcrypt.genSalt(10);
     return bcrypt.hash(password, salt);
@@ -59,17 +67,17 @@ export class UserService {
         createUserDto.password,
       );
 
-      const activationToken = crypto.randomBytes(32).toString("hex");
+      const activationToken = await this.b64EncodeUnicode(crypto.randomBytes(32).toString("hex"));
       const fiveMinutes = 1000 * 60 * 5;
       const activationExpires = new Date(Date.now() + fiveMinutes);
 
       const newUser = await this.userRepository.save({
         ...createUserDto,
         password: passwordHash,
-        activationToken: createUserDto.isGoogleLogin
+        token: createUserDto.isGoogleLogin
           ? null
           : activationToken,
-        activationExpires,
+        tokenExpires: activationExpires,
         active: createUserDto.isGoogleLogin ? true : false,
       });
 
@@ -137,6 +145,17 @@ export class UserService {
     }
   }
 
+  async findByEmailWithPassword(email: string): Promise<UserEntity> {
+    try {
+      return this.userRepository.findOne({
+        where: { email },
+        select: ["id", "email", "password", "isGoogleLogin", "active"],
+      });
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async findByCpf(cpf: string): Promise<UserEntity> {
     try {
       return this.userRepository.findOne({
@@ -152,22 +171,21 @@ export class UserService {
   ): Promise<IObjectResponse<UserDto>> {
     try {
       const user = await this.userRepository.findOne({
-        where: { activationToken },
+        where: { token: activationToken },
       });
       if (!user)
         throw new NotFoundException(
           this.i18n.t("events.commons.notFound"),
         );
 
-      console.log(user, new Date());
-      if (user.activationExpires < new Date())
+      if (user.tokenExpires < new Date())
         throw new ConflictException(
           this.i18n.t("events.commons.expiredToken"),
         );
 
       user.active = true;
-      user.activationToken = null;
-      user.activationExpires = null;
+      user.token = null;
+      user.tokenExpires = null;
       await this.userRepository.save(user);
       return {
         message: this.i18n.t("events.commons.success"),
@@ -181,7 +199,6 @@ export class UserService {
   async resendAccountConfirmationEmail(
     email: string,
   ): Promise<IObjectResponse<null>> {
-    console.log(email);
     try {
       const user = await this.userRepository.findOne({
         where: { email },
@@ -190,18 +207,17 @@ export class UserService {
         throw new NotFoundException(
           this.i18n.t("events.commons.notFound"),
         );
-      console.log(user);
       if (user?.active)
         throw new ConflictException(
           this.i18n.t("events.commons.alreadyActive"),
         );
 
-      const activationToken = crypto.randomBytes(32).toString("hex");
+      const activationToken = await this.b64EncodeUnicode(crypto.randomBytes(32).toString("hex"));
       const fiveMinutes = 1000 * 60 * 5;
       const activationExpires = new Date(Date.now() + fiveMinutes);
 
-      user.activationToken = activationToken;
-      user.activationExpires = activationExpires;
+      user.token = activationToken;
+      user.tokenExpires = activationExpires;
       await this.userRepository.save(user);
 
       await this.notificationService.sendAccountConfirmationEmail(
@@ -217,38 +233,73 @@ export class UserService {
     }
   }
 
-  // async update(
-  //   id: number,
-  //   updateUserDto: UpdateUserDto,
-  // ): Promise<IObjectResponse<UserEntity>> {
+  async sendForgotPasswordEmail(
+    email: string,
+  ): Promise<IObjectResponse<null>> {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { email },
+      });
+      if (!user)
+        throw new NotFoundException(
+          this.i18n.t("events.commons.notFound"),
+        );
 
-  //   const { data: user } = await this.findById(id);
+      if(!user.active)
+        throw new ConflictException(
+          this.i18n.t("events.commons.notActive"),
+        );
 
-  //   if (updateUserDto.email && updateUserDto.email !== user.email) {
-  //     const existingUser = await this.userRepository.findOne({
-  //       where: { email: updateUserDto.email },
-  //     });
-  //     if (existingUser) {
-  //       throw new ConflictException("Email already in use");
-  //     }
-  //   }
+      const resetToken = await this.b64EncodeUnicode(crypto.randomBytes(32).toString("hex"));
+      const fiveMinutes = 1000 * 60 * 5;
+      const resetExpires = new Date(Date.now() + fiveMinutes);
 
-  //   if (updateUserDto.password) {
-  //     updateUserDto.password = await this.hashPassword(
-  //       updateUserDto.password,
-  //     );
-  //   }
+      user.token = resetToken;
+      user.tokenExpires = resetExpires;
+      await this.userRepository.save(user);
 
-  //   await this.userRepository.update(id, updateUserDto);
-  //   return await this.findById(id);
-  // }
+      await this.notificationService.sendForgotPasswordEmail(
+        email,
+        resetToken,
+      );
+      return {
+        message: this.i18n.t("events.commons.success"),
+        data: null,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 
-  // async remove(id: number): Promise<void> {
-  //   const user = await this.findById(id);
-  //   if (!user)
-  //     throw new NotFoundException(
-  //       this.i18n.t("events.commons.notFound"),
-  //     );
-  //   await this.userRepository.update(id, { active: false });
-  // }
+  async resetPassword(
+    resetToken: string,
+    password: string,
+  ): Promise<IObjectResponse<null>> {
+    try {
+      const user = await this.userRepository.findOne({
+        where: { token: resetToken },
+        select: ["id", "token", "tokenExpires", "password"],
+      });
+      if (!user)
+        throw new NotFoundException(
+          this.i18n.t("events.commons.notFound"),
+        );
+
+      if (user.tokenExpires < new Date())
+        throw new ConflictException(
+          this.i18n.t("events.commons.expiredToken"),
+        );
+
+      user.password = await this.hashPassword(password);
+      user.token = null;
+      user.tokenExpires = null;
+      await this.userRepository.save(user);
+      return {
+        message: this.i18n.t("events.commons.success"),
+        data: null,
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
 }
