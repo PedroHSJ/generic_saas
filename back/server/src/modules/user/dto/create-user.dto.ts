@@ -23,16 +23,16 @@ export class CreateUserDto {
     example: "John Doe",
   })
   @IsString({
-    message: i18nValidationMessage("events.validation.IS_STRING"),
+    message: i18nValidationMessage("events.validation.mustBeString"),
   })
   @IsNotEmpty({
-    message: i18nValidationMessage("events.validation.IS_NOT_EMPTY"),
+    message: i18nValidationMessage("events.validation.required"),
   })
   @MaxLength(255, {
-    message: i18nValidationMessage("events.validation.MAX_LENGTH"),
+    message: i18nValidationMessage("events.validation.max", { max: 255 }),
   })
   @MinLength(3, {
-    message: i18nValidationMessage("events.validation.MIN_LENGTH"),
+    message: i18nValidationMessage("events.validation.min", { min: 3 }),
   })
   @Transform(({ value }) => value.trim())
   name: string;
@@ -43,10 +43,10 @@ export class CreateUserDto {
   })
   @IsEmail()
   @IsNotEmpty({
-    message: i18nValidationMessage("events.validation.IS_NOT_EMPTY"),
+    message: i18nValidationMessage("events.validation.required"),
   })
   @MaxLength(255, {
-    message: i18nValidationMessage("events.validation.MAX_LENGTH"),
+    message: i18nValidationMessage("events.validation.max"),
   })
   @Transform(({ value }) => value.trim().toLowerCase())
   email: string;
@@ -69,7 +69,7 @@ export class CreateUserDto {
   })
   @ValidateIf((o) => o.picture !== undefined)
   @IsString({
-    message: i18nValidationMessage("events.validation.IS_STRING"),
+    message: i18nValidationMessage("events.validation.mustBeString"),
   })
   @IsOptional()
   picture: string;
@@ -79,21 +79,21 @@ export class CreateUserDto {
     example: "StrongPassword123!",
   })
   @IsString({
-    message: i18nValidationMessage("events.validation.IS_STRING"),
+    message: i18nValidationMessage("events.validation.mustBeString"),
   })
   @IsNotEmpty({
-    message: i18nValidationMessage("events.validation.IS_NOT_EMPTY"),
+    message: i18nValidationMessage("events.validation.required"),
   })
   @MinLength(8, {
-    message: i18nValidationMessage("events.validation.MIN_LENGTH"),
+    message: i18nValidationMessage("events.validation.min"),
   })
   @MaxLength(255, {
-    message: i18nValidationMessage("events.validation.MAX_LENGTH"),
+    message: i18nValidationMessage("events.validation.max"),
   })
   @Matches(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,}$/,
     {
-      message: i18nValidationMessage("events.validation.PASSWORD"),
+      message: i18nValidationMessage("events.validation.passwordRule"),
     },
   )
   password: string;
