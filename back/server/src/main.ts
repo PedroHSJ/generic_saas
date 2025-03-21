@@ -46,7 +46,7 @@ async function bootstrap() {
         const i18nContext = I18nContext.current();
         const translatedMessage = i18nContext
           ? i18nContext.translate(
-              "events.validation.VALIDATION_ERROR",
+              "events.validation.validationError",
             )
           : "Validation error";
         return {
