@@ -87,9 +87,8 @@ export class AuthController {
   async auth(
     @Body() body: LoginDto,
   ): Promise<{ access_token: string; message: string }> {
-    return this.authService.login({
-      email: body.email,
+    return this.authService.login({email: body.email,
       pass: body.password,
-    });
+              });
   }
 }
