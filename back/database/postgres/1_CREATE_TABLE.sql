@@ -37,8 +37,8 @@ CREATE TABLE TB_USER (
     CPF VARCHAR(14) UNIQUE, -- CPF do usuário
     PASSWORD VARCHAR(255) NOT NULL, -- Senha do usuário
     GOOGLE_LOGIN BOOLEAN DEFAULT FALSE, -- Se o usuário fez login com o Google
-    ACTIVATION_TOKEN VARCHAR(255), -- Token de ativação da conta
-    ACTIVATION_TOKEN_EXPIRATION TIMESTAMP, -- Data de expiração do token de ativação
+    TOKEN VARCHAR(255), -- Token da conta
+    TOKEN_EXPIRATION TIMESTAMP, -- Data de expiração do token
     CREATED_AT TIMESTAMP DEFAULT NOW(), -- Data de criação do registro
     UPDATED_AT TIMESTAMP DEFAULT NOW(), -- Data de atualização do registro
     CREATED_BY INTEGER REFERENCES TB_USER(ID), -- Criado por
