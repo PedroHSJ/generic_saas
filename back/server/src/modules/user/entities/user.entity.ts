@@ -48,9 +48,9 @@ export class UserEntity extends BaseEntity {
   })
   password: string;
 
-  @Column({ name: "activation_token", type: "varchar", length: 255 })
-  activationToken: string;
+  @Column({ name: "token", type: "varchar", length: 255 })
+  token: string;
 
-  @Column({ name: "activation_token_expiration", type: "timestamp" })
-  activationExpires: Date;
+  @Column({ name: "token_expiration", type: "timestamp" })
+  tokenExpires: Date;
 }
