@@ -18,7 +18,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "cross-env NODE_ENV=test jest --config ./test/jest-e2e.json --detectOpenHandles --forceExit --runInBand",
-    "test:e2e:covarage": "cross-env NODE_ENV=test jest --config ./test/jest-e2e.json --detectOpenHandles --forceExit --runInBand --coverage"
+    "test:e2e:covarage": "cross-env NODE_ENV=test jest --config ./test/jest-e2e.json --detectOpenHandles --forceExit --runInBand --coverage",
+    "prepare": "husky"
   },
   "dependencies": {
     "@clerk/backend": "^1.23.11",
