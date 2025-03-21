@@ -1,0 +1,108 @@
+import {
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from "@nestjs/common";
+import { UserService } from "../user/user.service";
+import { JwtService } from "@nestjs/jwt";
+import { IJwtPayload } from "src/shared/interfaces/jwtPayload.interface";
+import { UserEntity } from "../user/entities/user.entity";
+import { I18nService } from "nestjs-i18n";
+import { CreateUserDto } from "../user/dto/create-user.dto";
+
+@Injectable()
+export class AuthService {
+  constructor(
+    @Inject(UserService)
+    private readonly userService: UserService,
+    @Inject(JwtService)
+    private jwtService: JwtService,
+    @Inject(I18nService)
+    private readonly i18n: I18nService,
+  ) {}
+
+  async login({
+    email,
+    pass,
+  }: {
+    email: string;
+    pass: string;
+  }): Promise<any> {
+    const user = await this.userService.findByEmail(email);
+    if (!user)
+      throw new UnauthorizedException(
+        this.i18n.t("events.commons.notFound"),
+      );
+
+    if (user.active === false)
+      throw new UnauthorizedException(
+        this.i18n.t("events.commons.userInactive"),
+      );
+
+    if (user.isGoogleLogin)
+      throw new UnauthorizedException(
+        this.i18n.t("events.commons.googleLogin"),
+      );
+
+    const passwordIsValid = await this.userService.comparePassword(
+      pass,
+      user.password,
+    );
+    if (user && passwordIsValid) return this.tokenGenerate(user);
+  }
+
+  async loginGoogle(id: number) {
+    const { data: userExists } = await this.userService.findById(id);
+    if (!userExists)
+      throw new UnauthorizedException(
+        this.i18n.t("events.commons.notFound"),
+      );
+    return this.tokenGenerate({
+      email: userExists.email,
+      id: userExists.id,
+    });
+  }
+
+  async validateGoogleUser(user: CreateUserDto): Promise<any> {
+    try {
+      const userExists = await this.userService.findByEmail(
+        user.email,
+      );
+      if (!userExists) return await this.userService.create(user);
+      return userExists;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  //#region TOKEN
+  async tokenGenerate(payload: {
+    email: string;
+    id: number;
+  }): Promise<{ access_token: string; message: string }> {
+    try {
+      const payloadToken = {
+        email: payload.email,
+        id: payload.id,
+      };
+      const access_token = this.jwtService.sign(payloadToken);
+      return {
+        access_token,
+        message: this.i18n.t("events.commons.success"),
+      };
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async verifyToken(token: string): Promise<IJwtPayload> {
+    try {
+      return this.jwtService.verify(token);
+    } catch (error) {
+      throw new UnauthorizedException(
+        this.i18n.t("events.commons.invalidToken"),
+      );
+    }
+  }
+  //#endregion
+}

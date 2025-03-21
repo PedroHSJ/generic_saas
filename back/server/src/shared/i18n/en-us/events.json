@@ -1,0 +1,15 @@
+{
+  "teste": "test of something that started working",
+  "databaseError": "The record violates foreign key integrity, please check your request",
+  "commons": {
+    "success": "Operation successfully completed.",
+    "error": "Unable to complete the operation, please try again later.",
+    "notFound": "Record not found.",
+    "invalidData": "Invalid data.",
+    "alreadyExists": "The record already exists.",
+    "invalidCredentials": "Invalid credentials.",
+    "invalidCPF": "Invalid CPF.",
+    "alredyInactive": "The record is already inactive.",
+    "emailInUse": "The email is already in use."
+  }
+}

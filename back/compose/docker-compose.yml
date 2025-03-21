@@ -1,0 +1,20 @@
+version: "3.5"
+
+services:
+  db:
+    container_name: psql
+    image: postgres:15
+    environment:
+      POSTGRES_DB: nutri_flow
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      PGDATA: /data/postgres
+    volumes:
+      - ../database/postgres:/docker-entrypoint-initdb.d
+      - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+volumes:
+  postgres:
