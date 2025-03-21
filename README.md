@@ -21,5 +21,5 @@ Você pode rodar o projeto localmente seguindo os passos abaixo:
 - Execute o comando `yarn start` para rodar o frontend.
 
 ### Acesso
-- Acesse a aplicação em `http://localhost:3000`.
+- Acesse a aplicação em `http://localhost:5173`.
 - Acesse a documentação da API em `http://localhost:5001/api/docs`.
