@@ -84,7 +84,9 @@ export class AuthController {
     description: "Bad request",
   })
   @Post()
-  async auth(@Body() body: LoginDto): Promise<{ access_token: string; message: string }> {
+  async auth(
+    @Body() body: LoginDto,
+  ): Promise<{ access_token: string; message: string }> {
     return this.authService.login({
       email: body.email,
       pass: body.password,

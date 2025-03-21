@@ -1,4 +1,11 @@
-import { Controller, Get, Post, Body, Param, Res } from "@nestjs/common";
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Res,
+} from "@nestjs/common";
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import {
@@ -101,7 +108,10 @@ export class UserController {
 
   @Public()
   @Get("/reset-password/:token")
-  @ApiOperation({ summary: "Callback reset password", description: "Callback to redirect to the reset password page" })
+  @ApiOperation({
+    summary: "Callback reset password",
+    description: "Callback to redirect to the reset password page",
+  })
   @ApiResponse({
     status: 200,
     description: "Password reset successfully",
@@ -122,16 +132,21 @@ export class UserController {
     status: 200,
     description: "Password reset successfully",
   })
-  @ApiParam({ name: "token", description: "Token to reset password (base64)", })
+  @ApiParam({
+    name: "token",
+    description: "Token to reset password (base64)",
+  })
   @ApiResponse({ status: 400, description: "Bad request" })
   @ApiBody({ type: UpdatePasswordDto })
   async resetPassword(
     @Param("token") token: string,
-    @Body() body: UpdatePasswordDto
+    @Body() body: UpdatePasswordDto,
   ): Promise<IObjectResponse<null>> {
-    return await this.userService.resetPassword(token, body.newPassword);
+    return await this.userService.resetPassword(
+      token,
+      body.newPassword,
+    );
   }
-
 
   // @Get(":id")
   // @ApiOperation({ summary: "Get a user by ID" })

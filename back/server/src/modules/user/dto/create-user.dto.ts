@@ -29,10 +29,14 @@ export class CreateUserDto {
     message: i18nValidationMessage("events.validation.required"),
   })
   @MaxLength(255, {
-    message: i18nValidationMessage("events.validation.max", { max: 255 }),
+    message: i18nValidationMessage("events.validation.max", {
+      max: 255,
+    }),
   })
   @MinLength(3, {
-    message: i18nValidationMessage("events.validation.min", { min: 3 }),
+    message: i18nValidationMessage("events.validation.min", {
+      min: 3,
+    }),
   })
   @Transform(({ value }) => value.trim())
   name: string;
@@ -93,7 +97,9 @@ export class CreateUserDto {
   @Matches(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,}$/,
     {
-      message: i18nValidationMessage("events.validation.passwordRule"),
+      message: i18nValidationMessage(
+        "events.validation.passwordRule",
+      ),
     },
   )
   password: string;

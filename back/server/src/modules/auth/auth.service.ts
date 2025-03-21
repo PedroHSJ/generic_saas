@@ -28,7 +28,8 @@ export class AuthService {
     email: string;
     pass: string;
   }): Promise<{ access_token: string; message: string }> {
-    const user = await this.userService.findByEmailWithPassword(email);
+    const user =
+      await this.userService.findByEmailWithPassword(email);
     if (!user)
       throw new UnauthorizedException(
         this.i18n.t("events.commons.notFound"),
@@ -47,7 +48,7 @@ export class AuthService {
       pass,
       user.password,
     );
-    if(!passwordIsValid) 
+    if (!passwordIsValid)
       throw new UnauthorizedException(
         this.i18n.t("events.commons.invalidCredentials"),
       );

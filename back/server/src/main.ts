@@ -45,9 +45,7 @@ async function bootstrap() {
       responseBodyFormatter(host, exc, formattedErrors) {
         const i18nContext = I18nContext.current();
         const translatedMessage = i18nContext
-          ? i18nContext.translate(
-              "events.validation.validationError",
-            )
+          ? i18nContext.translate("events.validation.validationError")
           : "Validation error";
         return {
           statusCode: exc.getStatus(),

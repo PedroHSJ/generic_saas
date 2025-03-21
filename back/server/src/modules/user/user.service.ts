@@ -67,16 +67,16 @@ export class UserService {
         createUserDto.password,
       );
 
-      const activationToken = await this.b64EncodeUnicode(crypto.randomBytes(32).toString("hex"));
+      const activationToken = await this.b64EncodeUnicode(
+        crypto.randomBytes(32).toString("hex"),
+      );
       const fiveMinutes = 1000 * 60 * 5;
       const activationExpires = new Date(Date.now() + fiveMinutes);
 
       const newUser = await this.userRepository.save({
         ...createUserDto,
         password: passwordHash,
-        token: createUserDto.isGoogleLogin
-          ? null
-          : activationToken,
+        token: createUserDto.isGoogleLogin ? null : activationToken,
         tokenExpires: activationExpires,
         active: createUserDto.isGoogleLogin ? true : false,
       });
@@ -149,7 +149,13 @@ export class UserService {
     try {
       return this.userRepository.findOne({
         where: { email },
-        select: ["id", "email", "password", "isGoogleLogin", "active"],
+        select: [
+          "id",
+          "email",
+          "password",
+          "isGoogleLogin",
+          "active",
+        ],
       });
     } catch (error) {
       throw error;
@@ -212,7 +218,9 @@ export class UserService {
           this.i18n.t("events.commons.alreadyActive"),
         );
 
-      const activationToken = await this.b64EncodeUnicode(crypto.randomBytes(32).toString("hex"));
+      const activationToken = await this.b64EncodeUnicode(
+        crypto.randomBytes(32).toString("hex"),
+      );
       const fiveMinutes = 1000 * 60 * 5;
       const activationExpires = new Date(Date.now() + fiveMinutes);
 
@@ -245,12 +253,14 @@ export class UserService {
           this.i18n.t("events.commons.notFound"),
         );
 
-      if(!user.active)
+      if (!user.active)
         throw new ConflictException(
           this.i18n.t("events.commons.notActive"),
         );
 
-      const resetToken = await this.b64EncodeUnicode(crypto.randomBytes(32).toString("hex"));
+      const resetToken = await this.b64EncodeUnicode(
+        crypto.randomBytes(32).toString("hex"),
+      );
       const fiveMinutes = 1000 * 60 * 5;
       const resetExpires = new Date(Date.now() + fiveMinutes);
 
