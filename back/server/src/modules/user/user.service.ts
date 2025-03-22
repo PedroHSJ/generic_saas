@@ -63,9 +63,7 @@ export class UserService {
           this.i18n.t("events.commons.alreadyExists"),
         );
       }
-      const passwordHash = await this.hashPassword(
-        createUserDto.password,
-      );
+      const passwordHash = await this.hashPassword(createUserDto.password);
 
       const activationToken = await this.b64EncodeUnicode(
         crypto.randomBytes(32).toString("hex"),
@@ -149,13 +147,7 @@ export class UserService {
     try {
       return this.userRepository.findOne({
         where: { email },
-        select: [
-          "id",
-          "email",
-          "password",
-          "isGoogleLogin",
-          "active",
-        ],
+        select: ["id", "email", "password", "isGoogleLogin", "active"],
       });
     } catch (error) {
       throw error;
@@ -180,14 +172,10 @@ export class UserService {
         where: { token: activationToken },
       });
       if (!user)
-        throw new NotFoundException(
-          this.i18n.t("events.commons.notFound"),
-        );
+        throw new NotFoundException(this.i18n.t("events.commons.notFound"));
 
       if (user.tokenExpires < new Date())
-        throw new ConflictException(
-          this.i18n.t("events.commons.expiredToken"),
-        );
+        throw new ConflictException(this.i18n.t("events.commons.expiredToken"));
 
       user.active = true;
       user.token = null;
@@ -210,9 +198,7 @@ export class UserService {
         where: { email },
       });
       if (!user)
-        throw new NotFoundException(
-          this.i18n.t("events.commons.notFound"),
-        );
+        throw new NotFoundException(this.i18n.t("events.commons.notFound"));
       if (user?.active)
         throw new ConflictException(
           this.i18n.t("events.commons.alreadyActive"),
@@ -241,22 +227,16 @@ export class UserService {
     }
   }
 
-  async sendForgotPasswordEmail(
-    email: string,
-  ): Promise<IObjectResponse<null>> {
+  async sendForgotPasswordEmail(email: string): Promise<IObjectResponse<null>> {
     try {
       const user = await this.userRepository.findOne({
         where: { email },
       });
       if (!user)
-        throw new NotFoundException(
-          this.i18n.t("events.commons.notFound"),
-        );
+        throw new NotFoundException(this.i18n.t("events.commons.notFound"));
 
       if (!user.active)
-        throw new ConflictException(
-          this.i18n.t("events.commons.notActive"),
-        );
+        throw new ConflictException(this.i18n.t("events.commons.notActive"));
 
       const resetToken = await this.b64EncodeUnicode(
         crypto.randomBytes(32).toString("hex"),
@@ -268,10 +248,7 @@ export class UserService {
       user.tokenExpires = resetExpires;
       await this.userRepository.save(user);
 
-      await this.notificationService.sendForgotPasswordEmail(
-        email,
-        resetToken,
-      );
+      await this.notificationService.sendForgotPasswordEmail(email, resetToken);
       return {
         message: this.i18n.t("events.commons.success"),
         data: null,
@@ -291,14 +268,10 @@ export class UserService {
         select: ["id", "token", "tokenExpires", "password"],
       });
       if (!user)
-        throw new NotFoundException(
-          this.i18n.t("events.commons.notFound"),
-        );
+        throw new NotFoundException(this.i18n.t("events.commons.notFound"));
 
       if (user.tokenExpires < new Date())
-        throw new ConflictException(
-          this.i18n.t("events.commons.expiredToken"),
-        );
+        throw new ConflictException(this.i18n.t("events.commons.expiredToken"));
 
       user.password = await this.hashPassword(password);
       user.token = null;

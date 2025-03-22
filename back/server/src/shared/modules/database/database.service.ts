@@ -46,20 +46,18 @@ export class DatabaseService {
           const filePath = `${dataDir}/${file}`;
           const sql = fs.readFileSync(filePath, "utf8");
 
-          await this.manager.transaction(
-            async (transactionalEntityManager) => {
-              await transactionalEntityManager.query(
-                `SET search_path TO ${schema}`,
-              );
-              await transactionalEntityManager.query(sql);
+          await this.manager.transaction(async (transactionalEntityManager) => {
+            await transactionalEntityManager.query(
+              `SET search_path TO ${schema}`,
+            );
+            await transactionalEntityManager.query(sql);
 
-              await transactionalEntityManager.query(
-                `INSERT INTO ${schema}.${tableName} (name, value) VALUES ($1, $2) 
+            await transactionalEntityManager.query(
+              `INSERT INTO ${schema}.${tableName} (name, value) VALUES ($1, $2) 
               ON CONFLICT (name) DO UPDATE SET value = EXCLUDED.value`,
-                ["SEEDER", file],
-              );
-            },
-          );
+              ["SEEDER", file],
+            );
+          });
         } catch (error) {
           console.error(`Failed to process file ${file}:`, error);
           throw error;
@@ -98,24 +96,19 @@ export class DatabaseService {
       }
 
       console.log("EXECUTANDO SCRIPT DE CRIAÇÃO DE TABELAS");
-      const dataDir = join(
-        __dirname,
-        "../../../../../database/postgres",
-      );
+      const dataDir = join(__dirname, "../../../../../database/postgres");
       const files = fs.readdirSync(dataDir).sort();
       for (const file of files) {
         try {
           const filePath = `${dataDir}/${file}`;
           const sql = fs.readFileSync(filePath, "utf8");
 
-          await this.manager.transaction(
-            async (transactionalEntityManager) => {
-              await transactionalEntityManager.query(
-                `SET search_path TO ${schema}`,
-              );
-              await transactionalEntityManager.query(sql);
-            },
-          );
+          await this.manager.transaction(async (transactionalEntityManager) => {
+            await transactionalEntityManager.query(
+              `SET search_path TO ${schema}`,
+            );
+            await transactionalEntityManager.query(sql);
+          });
 
           console.log(`SCRIPT EXECUTADO COM SUCESSO: ${file}`);
         } catch (error) {
@@ -170,9 +163,7 @@ export class DatabaseService {
       );
 
       if (schemaExists.length === 0) {
-        console.log(
-          `Schema ${schema} does not exist. Creating schema.`,
-        );
+        console.log(`Schema ${schema} does not exist. Creating schema.`);
         await this.manager.query(`CREATE SCHEMA ${schema}`);
         console.log(`Schema ${schema} created successfully.`);
         return;

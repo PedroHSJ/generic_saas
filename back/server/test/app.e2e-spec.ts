@@ -41,10 +41,7 @@ describe("AppController (e2e)", () => {
     tearDownTestServer(testApp)()
       .then(() => done())
       .catch((error) => {
-        console.error(
-          "Erro ao destruir o servidor de testes:",
-          error,
-        );
+        console.error("Erro ao destruir o servidor de testes:", error);
         done(error);
       });
   });

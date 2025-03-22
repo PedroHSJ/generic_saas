@@ -1,9 +1,5 @@
 import { applyDecorators, Type } from "@nestjs/common";
-import {
-  ApiExtraModels,
-  ApiOkResponse,
-  getSchemaPath,
-} from "@nestjs/swagger";
+import { ApiExtraModels, ApiOkResponse, getSchemaPath } from "@nestjs/swagger";
 
 export class PaginatedResponseDto<T> {
   data: T[];

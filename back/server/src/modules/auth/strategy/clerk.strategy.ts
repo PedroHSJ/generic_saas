@@ -1,9 +1,5 @@
 import { User, verifyToken } from "@clerk/backend";
-import {
-  Inject,
-  Injectable,
-  UnauthorizedException,
-} from "@nestjs/common";
+import { Inject, Injectable, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PassportStrategy } from "@nestjs/passport";
 import { Strategy } from "passport-custom";
@@ -11,10 +7,7 @@ import { Request } from "express";
 import { ClerkClient } from "@clerk/backend";
 
 @Injectable()
-export class ClerkStrategy extends PassportStrategy(
-  Strategy,
-  "clerk",
-) {
+export class ClerkStrategy extends PassportStrategy(Strategy, "clerk") {
   constructor(
     @Inject("ClerkClient")
     private readonly clerkClient: ClerkClient,
@@ -35,9 +28,7 @@ export class ClerkStrategy extends PassportStrategy(
         secretKey: this.configService.get("CLERK_SECRET_KEY"),
       });
 
-      const user = await this.clerkClient.users.getUser(
-        tokenPayload.sub,
-      );
+      const user = await this.clerkClient.users.getUser(tokenPayload.sub);
 
       return user;
     } catch (error) {

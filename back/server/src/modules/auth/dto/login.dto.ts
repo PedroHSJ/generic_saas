@@ -5,7 +5,7 @@ export class LoginDto {
   @ApiProperty({
     description: "User email",
     type: "string",
-    example: "joago@gmail.com",
+    example: "john.doe@example.com",
   })
   @Transform(({ value }) => value?.trim()?.toLowerCase())
   email: string;
@@ -13,7 +13,7 @@ export class LoginDto {
   @ApiProperty({
     description: "User password",
     type: "string",
-    example: "123456",
+    example: "StrongPassword123!",
   })
   @Transform(({ value }) => value?.trim())
   password: string;

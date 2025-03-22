@@ -13,9 +13,7 @@ import { UpdateSubscriptionDto } from "./dto/update-subscription.dto";
 
 @Controller("subscription")
 export class SubscriptionController {
-  constructor(
-    private readonly subscriptionService: SubscriptionService,
-  ) {}
+  constructor(private readonly subscriptionService: SubscriptionService) {}
 
   @Post()
   create(@Body() createSubscriptionDto: CreateSubscriptionDto) {
@@ -37,10 +35,7 @@ export class SubscriptionController {
     @Param("id") id: string,
     @Body() updateSubscriptionDto: UpdateSubscriptionDto,
   ) {
-    return this.subscriptionService.update(
-      +id,
-      updateSubscriptionDto,
-    );
+    return this.subscriptionService.update(+id, updateSubscriptionDto);
   }
 
   @Delete(":id")

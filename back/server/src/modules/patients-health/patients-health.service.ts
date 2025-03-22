@@ -16,10 +16,7 @@ export class PatientsHealthService {
     return `This action returns a #${id} patientsHealth`;
   }
 
-  update(
-    id: number,
-    updatePatientsHealthDto: UpdatePatientsHealthDto,
-  ) {
+  update(id: number, updatePatientsHealthDto: UpdatePatientsHealthDto) {
     return `This action updates a #${id} patientsHealth`;
   }
 

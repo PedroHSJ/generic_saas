@@ -31,10 +31,7 @@ export class DietController {
   }
 
   @Patch(":id")
-  update(
-    @Param("id") id: string,
-    @Body() updateDietDto: UpdateDietDto,
-  ) {
+  update(@Param("id") id: string, @Body() updateDietDto: UpdateDietDto) {
     return this.dietService.update(+id, updateDietDto);
   }
 

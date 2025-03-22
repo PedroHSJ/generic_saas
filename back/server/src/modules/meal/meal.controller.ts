@@ -31,10 +31,7 @@ export class MealController {
   }
 
   @Patch(":id")
-  update(
-    @Param("id") id: string,
-    @Body() updateMealDto: UpdateMealDto,
-  ) {
+  update(@Param("id") id: string, @Body() updateMealDto: UpdateMealDto) {
     return this.mealService.update(+id, updateMealDto);
   }
 

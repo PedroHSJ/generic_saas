@@ -26,8 +26,7 @@ async function bootstrap() {
   await databaseService.createSchema();
   await databaseService.createTables();
   await databaseService.loadData();
-  const i18n =
-    app.get<I18nService<Record<string, unknown>>>(I18nService);
+  const i18n = app.get<I18nService<Record<string, unknown>>>(I18nService);
   app.setGlobalPrefix("api");
   app.useGlobalFilters(
     new AllExceptionsFilter(i18n),
@@ -36,9 +35,7 @@ async function bootstrap() {
         return errors.map((error) => {
           return {
             field: error.property,
-            message: Object.values(error.constraints).find(
-              (i) => true,
-            ),
+            message: Object.values(error.constraints).find((i) => true),
           };
         });
       },

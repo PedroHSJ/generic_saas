@@ -48,9 +48,7 @@ export class TestApp {
   }
 }
 
-export function initTestServer(
-  testApp: TestApp,
-): () => Promise<void> {
+export function initTestServer(testApp: TestApp): () => Promise<void> {
   return async () => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -58,10 +56,9 @@ export function initTestServer(
       keyGenerate();
       initializeTransactionalContext();
 
-      const moduleFixture: TestingModule =
-        await Test.createTestingModule({
-          imports: [AppModule],
-        }).compile();
+      const moduleFixture: TestingModule = await Test.createTestingModule({
+        imports: [AppModule],
+      }).compile();
 
       console.log("Iniciando servidor de testes");
       const app = moduleFixture.createNestApplication();
@@ -84,9 +81,7 @@ export function initTestServer(
   };
 }
 
-export function tearDownTestServer(
-  testApp: TestApp,
-): () => Promise<void> {
+export function tearDownTestServer(testApp: TestApp): () => Promise<void> {
   return async () => {
     try {
       if (testApp.app) {

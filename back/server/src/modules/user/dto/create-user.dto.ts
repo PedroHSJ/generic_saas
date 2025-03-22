@@ -97,9 +97,7 @@ export class CreateUserDto {
   @Matches(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[a-zA-Z\d!@#$%^&*]{8,}$/,
     {
-      message: i18nValidationMessage(
-        "events.validation.passwordRule",
-      ),
+      message: i18nValidationMessage("events.validation.passwordRule"),
     },
   )
   password: string;

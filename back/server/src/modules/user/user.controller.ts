@@ -1,11 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Res,
-} from "@nestjs/common";
+import { Controller, Get, Post, Body, Param, Res } from "@nestjs/common";
 import { UserService } from "./user.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import {
@@ -22,6 +15,11 @@ import { UserDto } from "./dto/user.dto";
 import { Public } from "src/shared/helpers/decorators/public.decorator";
 import { Response } from "express";
 import { UpdatePasswordDto } from "./dto/update-password.dto";
+import {
+  Auth,
+  FeaturesEnum,
+  ScopesEnum,
+} from "src/shared/helpers/decorators/auth.decorator";
 
 @ApiHeader({
   name: "Accept-Language",
@@ -48,7 +46,7 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @Public()
+  @Auth([ScopesEnum.GLOBAL], [FeaturesEnum.USER_LIST])
   @Get()
   @ApiOperation({ summary: "Get all users" })
   @ApiResponse({
@@ -57,9 +55,7 @@ export class UserController {
     type: () => UserDto,
   })
   @ApiResponse({ status: 400, description: "Bad request" })
-  async findAll(
-    @Paginate() query: PaginateQuery,
-  ): Promise<Paginated<UserDto>> {
+  async findAll(@Paginate() query: PaginateQuery): Promise<Paginated<UserDto>> {
     return await this.userService.findAll(query);
   }
 
@@ -142,10 +138,7 @@ export class UserController {
     @Param("token") token: string,
     @Body() body: UpdatePasswordDto,
   ): Promise<IObjectResponse<null>> {
-    return await this.userService.resetPassword(
-      token,
-      body.newPassword,
-    );
+    return await this.userService.resetPassword(token, body.newPassword);
   }
 
   // @Get(":id")

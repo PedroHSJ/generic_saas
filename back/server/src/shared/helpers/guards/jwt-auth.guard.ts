@@ -23,22 +23,29 @@ export class JwtAuthGuard extends AuthGuard("jwt") {
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(
-      IS_PUBLIC_KEY,
-      [context.getHandler(), context.getClass()],
-    );
-
-    if (isPublic) return true;
-
-    // Verificação de Token JWT
-    const request = context.switchToHttp().getRequest();
-    const token = request.headers.authorization?.split(" ")[1];
-    if (!token)
-      throw new UnauthorizedException(
-        this.i18n.t("events.commons.notFoundToken"),
+    try {
+      const isPublic = this.reflector.getAllAndOverride<boolean>(
+        IS_PUBLIC_KEY,
+        [context.getHandler(), context.getClass()],
       );
 
-    await this.authService.verifyToken(token);
-    return true;
+      if (isPublic) return true;
+
+      // Verificação de Token JWT
+      const request = context.switchToHttp().getRequest();
+      const token = request.headers.authorization?.split(" ")[1];
+      console.log(token);
+      if (!token)
+        throw new UnauthorizedException(
+          this.i18n.t("events.commons.notFoundToken"),
+        );
+
+      const re = await this.authService.verifyToken(token);
+      console.log(re);
+      return true;
+    } catch (error) {
+      console.log("error", error);
+      return false;
+    }
   }
 }

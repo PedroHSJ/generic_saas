@@ -1,13 +1,9 @@
-import {
-  Injectable,
-  InternalServerErrorException,
-} from "@nestjs/common";
+import { Injectable, InternalServerErrorException } from "@nestjs/common";
 import axios from "axios";
 
 @Injectable()
 export class NotificationService {
-  private readonly brevoApiUrl =
-    "https://api.brevo.com/v3/smtp/email";
+  private readonly brevoApiUrl = "https://api.brevo.com/v3/smtp/email";
   private readonly apiKey: string;
   private readonly senderEmail: string;
   private readonly senderName: string;
@@ -16,14 +12,11 @@ export class NotificationService {
     // Inicializa as variáveis de ambiente
     this.apiKey = process.env.BREVO_API_KEY || "";
     this.senderEmail =
-      process.env.BREVO_SENDER_EMAIL ||
-      "pedrohenriquesj.pro@gmail.com";
+      process.env.BREVO_SENDER_EMAIL || "pedrohenriquesj.pro@gmail.com";
     this.senderName = process.env.BREVO_SENDER_NAME || "Example App";
 
     if (!this.apiKey) {
-      throw new Error(
-        "BREVO_API_KEY is not defined in environment variables",
-      );
+      throw new Error("BREVO_API_KEY is not defined in environment variables");
     }
   }
 
@@ -67,10 +60,7 @@ export class NotificationService {
     }
   }
 
-  async sendAccountConfirmationEmail(
-    to: string,
-    token: string,
-  ): Promise<void> {
+  async sendAccountConfirmationEmail(to: string, token: string): Promise<void> {
     const subject = "Account Confirmation";
     const htmlContent = `
       <h1>Account Confirmation</h1>
@@ -80,10 +70,7 @@ export class NotificationService {
     await this.sendEmail(to, subject, htmlContent);
   }
 
-  async sendForgotPasswordEmail(
-    to: string,
-    token: string,
-  ): Promise<void> {
+  async sendForgotPasswordEmail(to: string, token: string): Promise<void> {
     const subject = "Reset Password";
     const htmlContent = `
       <h1>Reset Password</h1>

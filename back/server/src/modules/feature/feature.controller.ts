@@ -31,10 +31,7 @@ export class FeatureController {
   }
 
   @Patch(":id")
-  update(
-    @Param("id") id: string,
-    @Body() updateFeatureDto: UpdateFeatureDto,
-  ) {
+  update(@Param("id") id: string, @Body() updateFeatureDto: UpdateFeatureDto) {
     return this.featureService.update(+id, updateFeatureDto);
   }
 

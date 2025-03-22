@@ -13,9 +13,7 @@ import { UpdatePatientsHealthDto } from "./dto/update-patients-health.dto";
 
 @Controller("patients-health")
 export class PatientsHealthController {
-  constructor(
-    private readonly patientsHealthService: PatientsHealthService,
-  ) {}
+  constructor(private readonly patientsHealthService: PatientsHealthService) {}
 
   @Post()
   create(@Body() createPatientsHealthDto: CreatePatientsHealthDto) {
@@ -37,10 +35,7 @@ export class PatientsHealthController {
     @Param("id") id: string,
     @Body() updatePatientsHealthDto: UpdatePatientsHealthDto,
   ) {
-    return this.patientsHealthService.update(
-      +id,
-      updatePatientsHealthDto,
-    );
+    return this.patientsHealthService.update(+id, updatePatientsHealthDto);
   }
 
   @Delete(":id")

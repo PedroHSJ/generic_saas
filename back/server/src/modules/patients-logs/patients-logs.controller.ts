@@ -13,9 +13,7 @@ import { UpdatePatientsLogDto } from "./dto/update-patients-log.dto";
 
 @Controller("patients-logs")
 export class PatientsLogsController {
-  constructor(
-    private readonly patientsLogsService: PatientsLogsService,
-  ) {}
+  constructor(private readonly patientsLogsService: PatientsLogsService) {}
 
   @Post()
   create(@Body() createPatientsLogDto: CreatePatientsLogDto) {

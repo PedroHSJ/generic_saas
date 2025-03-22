@@ -25,10 +25,7 @@ export function ContextTokenHeader() {
 
 @Injectable()
 export class CustomHeaderInterceptor implements NestInterceptor {
-  intercept(
-    context: ExecutionContext,
-    next: CallHandler,
-  ): Observable<any> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const request = context.switchToHttp().getRequest();
     const customHeaderValue = request.headers["context-token"];
     const response = context.switchToHttp().getResponse();

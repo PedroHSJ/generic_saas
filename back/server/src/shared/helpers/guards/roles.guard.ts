@@ -1,111 +1,97 @@
-// import {
-//   Injectable,
-//   CanActivate,
-//   ExecutionContext,
-//   Inject,
-//   ForbiddenException,
-// } from '@nestjs/common';
-// import { Reflector } from '@nestjs/core';
-// import { I18nService } from 'nestjs-i18n';
-// import { RolesService } from 'src/modules/roles/roles.service';
-// import { RolesGuardRequest } from 'src/shared/interfaces/rolesGuardRequest.interface';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  Inject,
+  ForbiddenException,
+} from "@nestjs/common";
+import { Reflector } from "@nestjs/core";
+import { I18nService } from "nestjs-i18n";
+import { RolesGuardRequest } from "src/shared/interfaces/rolesGuardRequest.interface";
 
-// @Injectable()
-// export class RolesGuard implements CanActivate {
-//   constructor(
-//     @Inject(RolesService)
-//     private readonly rolesService: RolesService,
-//     @Inject(I18nService)
-//     private readonly i18n: I18nService,
-//     private reflector: Reflector,
-//   ) {}
+@Injectable()
+export class RolesGuard implements CanActivate {
+  constructor(
+    @Inject(I18nService)
+    private readonly i18n: I18nService,
+    private reflector: Reflector,
+  ) {}
 
-//   async canActivate(executionContext: ExecutionContext): Promise<boolean> {
-//     const roles = this.reflector.get<string[]>(
-//       'roles',
-//       executionContext.getHandler(),
-//     );
-//     const scopes = this.reflector.get<string[]>(
-//       'scope',
-//       executionContext.getHandler(),
-//     );
-//     const request = executionContext
-//       .switchToHttp()
-//       .getRequest<RolesGuardRequest>();
+  async canActivate(executionContext: ExecutionContext): Promise<boolean> {
+    const features = this.reflector.get<string[]>(
+      "features",
+      executionContext.getHandler(),
+    );
+    console.log("RolesGuard -> features", features);
+    const scopes = this.reflector.get<string[]>(
+      "scopes",
+      executionContext.getHandler(),
+    );
+    console.log("RolesGuard -> scopes", scopes);
+    const request = executionContext
+      .switchToHttp()
+      .getRequest<RolesGuardRequest>();
 
-//     if (!roles) {
-//       return true;
-//     }
+    if (!features) {
+      console.log("no features");
+      return true;
+    }
 
-//     if (roles.includes('OPEN')) {
-//       return true;
-//     }
+    if (features.includes("OPEN")) {
+      console.log("OPEN");
+      return true;
+    }
 
-//     const lang = request.headers.language ?? 'pt-br';
+    // if (!request.context) {
+    //   throw new ForbiddenException(
+    //     this.i18n.translate("events.permission.notEnoughContext"),
+    //   );
+    // }
+    // const {
+    //   instanceId: contextInstanceId,
+    //   establishmentId: contextEstablishmentId,
+    // } = request.context;
 
-//     if (!request.context || !request.resources) {
-//       throw new ForbiddenException(
-//         this.i18n.translate('events.permission.notEnoughContext', { lang }),
-//       );
-//     }
-//     const {
-//       instanceId: contextInstanceId,
-//       establishmentId: contextEstablishmentId,
-//     } = request.context;
+    // const testContext = this.compareContextToParams(scopes, {
+    //   establishmentId: contextInstanceId,
+    //   instanceId: contextEstablishmentId,
+    // });
+    // if (!testContext)
+    //   throw new ForbiddenException(
+    //     this.i18n.translate("events.permission.notEnoughContext"),
+    //   );
 
-//     const {
-//       establishmentId: paramsEstablishmentId,
-//       instanceId: paramsInstanceId,
-//     } = request.params;
+    // const features: string[] = request.features;
+    // const hasRole: boolean = roles.every((role) => features.includes(role));
 
-//     const testContext = this.compareContextToParams(
-//       scopes,
-//       { establishmentId: paramsEstablishmentId, instanceId: paramsInstanceId },
-//       {
-//         establishmentId: contextEstablishmentId,
-//         instanceId: contextInstanceId,
-//       },
-//     );
-//     if (!testContext) {
-//       throw new ForbiddenException(
-//         this.i18n.translate('events.permission.notEnoughContext', { lang }),
-//       );
-//     }
-//     const resources: string[] = request.resources;
-//     const hasRole: boolean = roles.every((role) => resources.includes(role));
+    // if (!hasRole) {
+    //   throw new ForbiddenException(
+    //     this.i18n.translate("events.permission.notEnoughPrivileges"),
+    //   );
+    // }
 
-//     if (!hasRole) {
-//       throw new ForbiddenException(
-//         this.i18n.translate('events.permission.notEnoughPrivileges', { lang }),
-//       );
-//     }
+    return true;
+  }
 
-//     return true;
-//   }
+  private compareContextToParams(
+    scopes: string[],
+    context: {
+      instanceId: string | null;
+      establishmentId: string | null;
+    },
+  ): boolean {
+    return scopes.some((scope) => {
+      switch (scope) {
+        case "global":
+          return true;
 
-//   private compareContextToParams(
-//     scopes: string[],
-//     params: {
-//       instanceId: string | null;
-//       establishmentId: string | null;
-//     },
-//     context: {
-//       instanceId: string | null;
-//       establishmentId: string | null;
-//     },
-//   ): boolean {
-//     return scopes.some((scope) => {
-//       switch (scope) {
-//         case 'global':
-//           return true;
+        case "instance":
+          return context.instanceId !== null;
 
-//         case 'instance':
-//           return context.instanceId !== null;
-
-//         case 'establishment':
-//           return context.establishmentId !== null;
-//       }
-//       return false;
-//     });
-//   }
-// }
+        case "establishment":
+          return context.establishmentId !== null;
+      }
+      return false;
+    });
+  }
+}

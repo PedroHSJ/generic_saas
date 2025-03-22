@@ -22,10 +22,7 @@ export class NutritionistService {
   ) {}
 
   @Transactional()
-  async create(
-    createNutritionistDto: CreateNutritionistDto,
-    lang: string,
-  ) {
+  async create(createNutritionistDto: CreateNutritionistDto, lang: string) {
     try {
       const nutriExists = await this.nutritionistRepository.findOne({
         where: {
@@ -35,12 +32,9 @@ export class NutritionistService {
 
       if (nutriExists)
         throw new BadRequestException({
-          message: this.i18n.translate(
-            "events.commons.alreadyExists",
-            {
-              lang,
-            },
-          ),
+          message: this.i18n.translate("events.commons.alreadyExists", {
+            lang,
+          }),
         });
 
       const nutriSaved = await this.nutritionistRepository.save(

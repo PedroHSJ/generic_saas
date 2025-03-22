@@ -31,10 +31,7 @@ export class PatientController {
   }
 
   @Patch(":id")
-  update(
-    @Param("id") id: string,
-    @Body() updatePatientDto: UpdatePatientDto,
-  ) {
+  update(@Param("id") id: string, @Body() updatePatientDto: UpdatePatientDto) {
     return this.patientService.update(+id, updatePatientDto);
   }
 

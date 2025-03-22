@@ -18,14 +18,11 @@ import { NutritionistService } from "./nutritionist.service";
 import { CreateNutritionistDto } from "./dto/create-nutritionist.dto";
 import { UpdateNutritionistDto } from "./dto/update-nutritionist.dto";
 import { Language } from "src/shared/helpers/decorators/lang.decorator";
-import { Auth } from "../auth/decorators/auth.decorator";
 
 @ApiTags("nutritionist")
 @Controller("nutritionist")
 export class NutritionistController {
-  constructor(
-    private readonly nutritionistService: NutritionistService,
-  ) {}
+  constructor(private readonly nutritionistService: NutritionistService) {}
 
   @Post()
   @ApiOperation({ summary: "Create a new nutritionist" })
@@ -39,13 +36,9 @@ export class NutritionistController {
     @Body() createNutritionistDto: CreateNutritionistDto,
     @Language() language: string,
   ) {
-    return this.nutritionistService.create(
-      createNutritionistDto,
-      language,
-    );
+    return this.nutritionistService.create(createNutritionistDto, language);
   }
 
-  @Auth()
   @Get()
   @ApiOperation({ summary: "Get all nutritionists" })
   @ApiResponse({
@@ -87,10 +80,7 @@ export class NutritionistController {
     @Param("id") id: string,
     @Body() updateNutritionistDto: UpdateNutritionistDto,
   ) {
-    return this.nutritionistService.update(
-      +id,
-      updateNutritionistDto,
-    );
+    return this.nutritionistService.update(+id, updateNutritionistDto);
   }
 
   @Delete(":id")
